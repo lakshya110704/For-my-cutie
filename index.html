@@ -7,13 +7,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body { background-color: #fff5f8; font-family: 'Quicksand', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow-x: hidden; color: #d880a7; }
-        .container { text-align: center; padding: 40px 20px; z-index: 2; max-width: 600px; }
+        .container { text-align: center; padding: 40px 20px; z-index: 2; max-width: 600px; width: 100%; }
         #cover-screen { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(255, 183, 213, 0.3); }
-        h1 { font-family: 'Dancing Script', cursive; font-size: 3.5rem; margin: 10px 0; }
-        .age-badge { background: #ffb7d5; color: white; padding: 8px 25px; border-radius: 50px; display: inline-block; margin-bottom: 10px;}
-        .photo-frame { width: 280px; background: white; padding: 15px 15px 40px 15px; border-radius: 5px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); transform: rotate(-3deg); margin: 30px auto; }
-        .photo-frame img { width: 100%; height: 300px; object-fit: cover; }
-        .message { line-height: 1.8; background: rgba(255, 255, 255, 0.8); padding: 25px; border-radius: 25px; border: 2px dashed #ffb7d5; }
+        h1 { font-family: 'Dancing Script', cursive; font-size: 3rem; margin: 10px 0; }
+        
+        /* Memory Lane Slideshow */
+        .photo-frame { width: 280px; height: 350px; background: white; padding: 15px 15px 50px 15px; border-radius: 5px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); transform: rotate(-3deg); margin: 30px auto; position: relative; }
+        .photo-frame img { position: absolute; left: 15px; top: 15px; width: 280px; height: 300px; object-fit: cover; opacity: 0; transition: opacity 1s ease-in-out; }
+        .photo-frame img.active { opacity: 1; }
+
+        /* 22 Reasons Section */
+        .reasons-container { margin-top: 40px; background: white; border-radius: 25px; padding: 20px; box-shadow: 0 5px 15px rgba(255, 183, 213, 0.2); }
+        .reasons-list { height: 200px; overflow-y: scroll; text-align: left; padding: 10px; border-radius: 15px; background: #fff9fb; border: 1px solid #ffeef4; }
+        .reasons-list::-webkit-scrollbar { width: 5px; }
+        .reasons-list::-webkit-scrollbar-thumb { background: #ffb7d5; border-radius: 10px; }
+        .reason-item { padding: 8px 0; border-bottom: 1px solid #fce4ec; font-size: 0.95rem; }
+
         .heart { position: fixed; top: -10%; z-index: 1; animation: fall linear forwards; pointer-events: none; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
         button { background: #ff85b3; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
@@ -22,45 +31,74 @@
 </head>
 <body>
     <div id="player" style="position: absolute; top: -9999px;"></div>
+    
     <div class="container">
         <div id="cover-screen">
-            <h1>A surprise for Mohini... 🌸</h1>
-            <p>Turn your volume up! 🔊</p>
+            <h1>Ready for your 22nd surprise? 🌸</h1>
             <button onclick="startMagic()">Open My Card ✨</button>
         </div>
+
         <div id="main-content">
-            <div class="age-badge">Level 22 unlocked! ✨</div>
             <h1>Happy Birthday, Mohini!</h1>
-            <div class="photo-frame"><img src="cutie.png"></div>
-            <div class="message"><p>To my favorite person: You make 22 look absolutely incredible. I hope your day is as bright and beautiful as your smile! ❤️</p></div>
-            <button onclick="createHeart()" style="margin-top:20px">💖 Give More Love</button>
+            
+            <div class="photo-frame" id="slideshow">
+                <img src="cutie.png" class="active">
+                <img src="pic2.png"> 
+                <img src="pic3.png">
+            </div>
+
+            <div class="reasons-container">
+                <h3 style="margin-top:0">22 Reasons Why I Love You ❤️</h3>
+                <div class="reasons-list">
+                    <div class="reason-item">1. Your incredible smile.</div>
+                    <div class="reason-item">2. How you always know how to make me laugh.</div>
+                    <div class="reason-item">3. The way you care for everyone around you.</div>
+                    <div class="reason-item">22. Because you are simply you.</div>
+                </div>
+            </div>
+
+            <button onclick="createHeart()" style="margin-top:20px">💖 Send More Love</button>
         </div>
     </div>
+
     <script>
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         document.head.appendChild(tag);
         var player;
+
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '0', width: '0',
-                videoId: 'dQw4w9WgXcQ', // REPLACE THIS WITH YOUR VIDEO ID
+                videoId: 'dQw4w9WgXcQ', // REPLACE WITH YOUR SONG ID
                 playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'dQw4w9WgXcQ' }
             });
         }
+
         function startMagic() {
             document.getElementById('cover-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
             if(player) { player.playVideo(); player.unMute(); }
             setInterval(createHeart, 400);
+            startSlideshow();
         }
+
+        function startSlideshow() {
+            const images = document.querySelectorAll('#slideshow img');
+            let current = 0;
+            setInterval(() => {
+                images[current].classList.remove('active');
+                current = (current + 1) % images.length;
+                images[current].classList.add('active');
+            }, 3000); // Changes every 3 seconds
+        }
+
         function createHeart() {
             const heart = document.createElement('div');
             heart.classList.add('heart');
             heart.innerHTML = ['🌸', '💖', '✨', '🎂'][Math.floor(Math.random() * 4)];
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            heart.style.fontSize = "25px";
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 5000);
         }
